@@ -49,8 +49,8 @@ local function save_profiles(threshold)
 end
 
 time([[Luarocks path setup]], true)
-local package_path_str = "/home/jaden/.cache/nvim/packer_hererocks/2.1.1741730670/share/lua/5.1/?.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1741730670/share/lua/5.1/?/init.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1741730670/lib/luarocks/rocks-5.1/?.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1741730670/lib/luarocks/rocks-5.1/?/init.lua"
-local install_cpath_pattern = "/home/jaden/.cache/nvim/packer_hererocks/2.1.1741730670/lib/lua/5.1/?.so"
+local package_path_str = "/home/jaden/.cache/nvim/packer_hererocks/2.1.1703358377/share/lua/5.1/?.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1703358377/share/lua/5.1/?/init.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1703358377/lib/luarocks/rocks-5.1/?.lua;/home/jaden/.cache/nvim/packer_hererocks/2.1.1703358377/lib/luarocks/rocks-5.1/?/init.lua"
+local install_cpath_pattern = "/home/jaden/.cache/nvim/packer_hererocks/2.1.1703358377/lib/lua/5.1/?.so"
 if not string.find(package.path, package_path_str, 1, true) then
   package.path = package.path .. ';' .. package_path_str
 end
@@ -74,6 +74,11 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  ["JavaScript-Indent"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/JavaScript-Indent",
+    url = "https://github.com/vim-scripts/JavaScript-Indent"
+  },
   ["autoclose.nvim"] = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/autoclose.nvim",
@@ -83,6 +88,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/awesome-vim-colorschemes",
     url = "https://github.com/rafi/awesome-vim-colorschemes"
+  },
+  black = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/black",
+    url = "https://github.com/psf/black"
   },
   ["coc-typescript-vue-plugin"] = {
     loaded = true,
@@ -119,10 +129,26 @@ _G.packer_plugins = {
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
   },
+  ["gruvbox-material"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/gruvbox-material",
+    url = "https://github.com/sainnhe/gruvbox-material"
+  },
   ["html5.vim"] = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/html5.vim",
     url = "https://github.com/othree/html5.vim"
+  },
+  ["indent-blankline.nvim"] = {
+    config = { "\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\tchar\bâ”‚\rtab_char\bâ”‚\nsetup\bibl\frequire\0" },
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim",
+    url = "https://github.com/lukas-reineke/indent-blankline.nvim"
+  },
+  ["indentpython.vim"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/indentpython.vim",
+    url = "https://github.com/vim-scripts/indentpython.vim"
   },
   neon = {
     loaded = true,
@@ -155,6 +181,16 @@ _G.packer_plugins = {
     path = "/home/jaden/.local/share/nvim/site/pack/packer/opt/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
   },
+  ["presence.nvim"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/presence.nvim",
+    url = "https://github.com/andweeb/presence.nvim"
+  },
+  ["python-syntax"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/python-syntax",
+    url = "https://github.com/vim-python/python-syntax"
+  },
   syntastic = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/syntastic",
@@ -174,6 +210,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-airline",
     url = "https://github.com/vim-airline/vim-airline"
+  },
+  ["vim-autopep8"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-autopep8",
+    url = "https://github.com/tell-k/vim-autopep8"
   },
   ["vim-closetag"] = {
     loaded = true,
@@ -200,6 +241,11 @@ _G.packer_plugins = {
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
   },
+  ["vim-isort"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-isort",
+    url = "https://github.com/fisadev/vim-isort"
+  },
   ["vim-javascript"] = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-javascript",
@@ -215,6 +261,11 @@ _G.packer_plugins = {
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-mustache-handlebars",
     url = "https://github.com/mustache/vim-mustache-handlebars"
   },
+  ["vim-nerdtree-tabs"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-nerdtree-tabs",
+    url = "https://github.com/jistr/vim-nerdtree-tabs"
+  },
   ["vim-polyglot"] = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-polyglot",
@@ -224,6 +275,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-prettier",
     url = "https://github.com/prettier/vim-prettier"
+  },
+  ["vim-python-pep8-indent"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/vim-python-pep8-indent",
+    url = "https://github.com/Vimjas/vim-python-pep8-indent"
   },
   ["vim-surround"] = {
     loaded = true,
@@ -253,6 +309,10 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
+-- Config for: indent-blankline.nvim
+time([[Config for indent-blankline.nvim]], true)
+try_loadstring("\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\tchar\bâ”‚\rtab_char\bâ”‚\nsetup\bibl\frequire\0", "config", "indent-blankline.nvim")
+time([[Config for indent-blankline.nvim]], false)
 
 _G._packer.inside_compile = false
 if _G._packer.needs_bufread == true then

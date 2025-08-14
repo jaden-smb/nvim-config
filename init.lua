@@ -1,17 +1,42 @@
 -- Basic Options
 local opt = vim.opt
 opt.number = true            -- Show line numbers
+vim.o.verbose = 0 -- suppress 'Sourcing ...' messages
+
+-- Ensure verbose stays off for Handlebars buffers (html indent can re-enable it)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "handlebars", "html.handlebars" },
+  callback = function()
+    vim.o.verbose = 0
+  end,
+})
 opt.relativenumber = true    -- Relative numbers
 opt.autoindent = true
+opt.smartindent = true       -- Automatic smarter indentation for code blocks
+opt.cindent = true           -- More advanced C-like indentation
+opt.expandtab = true         -- Use spaces instead of tabs
 opt.tabstop = 4
 opt.shiftwidth = 4
 opt.smarttab = true
 opt.softtabstop = 4
+opt.shiftround = true        -- Round indent to multiple of shiftwidth
 opt.mouse = "a"
 opt.encoding = "utf-8"
 opt.clipboard:append("unnamedplus")
 opt.background = "dark"
 opt.termguicolors = true
+opt.modifiable = true
+
+-- Compatibility: alias vim.uv to vim.loop for Neovim <0.10
+if vim.uv == nil and vim.loop ~= nil then
+  vim.uv = vim.loop
+end
+
+-- Advanced indentation settings
+opt.breakindent = true       -- Preserve indentation in wrapped text
+opt.showbreak = "↪ "         -- Show line break character
+opt.linebreak = true         -- Break lines at word boundaries
+opt.preserveindent = true    -- Preserve indent structure when re-indenting
 
 -- Leader
 vim.g.mapleader = ","
@@ -51,6 +76,7 @@ require("packer").startup(function(use)
 
   -- Language & syntax ---------------------------------------------
   use("pangloss/vim-javascript")
+  use("vim-scripts/JavaScript-Indent")  -- Better JavaScript indentation
   use("leafgarland/typescript-vim")
   use("posva/vim-vue")
   use("leafOfTree/vim-vue-plugin")
@@ -76,6 +102,36 @@ require("packer").startup(function(use)
   use("vim-syntastic/syntastic")
   use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
   use("windwp/nvim-ts-autotag")
+  use({
+    "lukas-reineke/indent-blankline.nvim", -- Visual indentation guides
+    config = function()
+      local ibl = require("ibl")
+      ibl.setup({
+        indent = { char = "│", tab_char = "│" },
+        scope = {
+          enabled = true,
+          show_start = true,
+          show_end = false,
+          injected_languages = false,
+          priority = 500,
+        },
+        exclude = {
+          filetypes = {
+            "help",
+            "alpha",
+            "dashboard",
+            "neo-tree",
+            "Trouble",
+            "lazy",
+            "mason",
+            "notify",
+            "toggleterm",
+            "lazyterm",
+          },
+        },
+      })
+    end,
+  })
 
   -- Git ------------------------------------------------------------
   use("tpope/vim-fugitive")
@@ -103,6 +159,10 @@ require("packer").startup(function(use)
   use("rafi/awesome-vim-colorschemes")
   use("tribela/transparent.nvim")
   use("rafamadriz/neon")
+  use("sainnhe/gruvbox-material")
+
+  -- Discord Rich Presence ------------------------------------------
+  use("andweeb/presence.nvim")
 
   if packer_bootstrap then
     require("packer").sync()
@@ -132,10 +192,28 @@ end
 local ok, treesitter = pcall(require, "nvim-treesitter.configs")
 if ok then
   treesitter.setup({
-    ensure_installed = { "html", "css", "javascript", "python", "lua", "vim", "vimdoc" },
-    highlight = { enable = true },
-    autotag = { enable = true },
-    indent = { enable = true },
+    ensure_installed = { 
+      "html", "css", "scss", "javascript", "typescript", "tsx", "json", "jsonc",
+      "python", "lua", "vim", "vimdoc", "yaml", "toml", "markdown", "vue",
+      "bash", "dockerfile", "gitignore", "sql", "regex"
+    },
+    highlight = { 
+      enable = true,
+      additional_vim_regex_highlighting = false,
+    },
+    indent = { 
+      enable = true,
+      disable = { "yaml" }, -- YAML indentation can be problematic with treesitter
+    },
+    incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection = "gnn",
+        node_incremental = "grn",
+        scope_incremental = "grc",
+        node_decremental = "grm",
+      },
+    },
   })
 end
 
@@ -168,11 +246,56 @@ if ok then
   })
 end
 
+-- Discord Presence -------------------------------------------------
+local ok, presence = pcall(require, "presence")
+if ok then
+  presence:setup({
+    -- General options
+    auto_update = true,                       -- Update activity based on autocmd events
+    neovim_image_text = "The One True Text Editor", -- Text displayed when hovered over the Neovim image
+    main_image = "neovim",                    -- Main image display (either "neovim" or "file")
+    client_id = "793271441293967371",         -- Use your own Discord application client id
+    log_level = nil,                          -- Log messages at or above this level (nil = no log)
+    debounce_timeout = 10,                    -- Number of seconds to debounce events
+    show_time = true,                         -- Show the timer
+
+    -- Rich presence text options
+    editing_text = "Editing %s",              -- Format string for currently editing
+    file_explorer_text = "Browsing %s",       -- Format string for file explorer
+    git_commit_text = "Committing changes",   -- Format string for commits
+    plugin_manager_text = "Managing plugins", -- Format string for plugin manager
+    reading_text = "Reading %s",              -- Format string for reading files
+    workspace_text = "secret_workspace",      -- Static workspace name instead of actual workspace
+
+    -- Rich presence emoji options
+    line_number_text = "Line %s out of %s",   -- Format string for line number
+    terminal_text = "Using Terminal",         -- Format string for terminal usage
+  })
+end
+
+-- Autoclose.nvim ---------------------------------------------------
+local ok, autoclose = pcall(require, "autoclose")
+if ok then
+  autoclose.setup()
+end
+
+-- nvim-ts-autotag --------------------------------------------------
+local ok, autotag = pcall(require, "nvim-ts-autotag")
+if ok then
+  autotag.setup()
+end
+
+-- ibl configuration is set in the Packer `use` block above.
+
 ---------------------------------------------------------------------
 -- Colourscheme -----------------------------------------------------
 ---------------------------------------------------------------------
--- Try to set colorscheme with fallback
-local colorscheme = "nightfox"
+-- Gruvbox material configuration (set before loading the colorscheme)
+vim.g.gruvbox_material_background = "hard"
+vim.g.gruvbox_material_enable_italic = 1
+vim.g.gruvbox_material_better_performance = 1
+
+local colorscheme = "gruvbox-material"
 local success = pcall(vim.cmd, "colorscheme " .. colorscheme)
 if not success then
   -- Fallback to default colorscheme
@@ -220,11 +343,15 @@ map("n", "<leader>f", function()
   -- Store current window info before opening fzf
   local current_win = vim.api.nvim_get_current_win()
   vim.cmd("Files")
-  -- Set up autocmd to restore proper window context after fzf closes
+  -- Set up autocmd to handle post-fzf actions
   vim.api.nvim_create_autocmd("BufEnter", {
     once = true,
     callback = function()
       vim.defer_fn(function()
+        -- If NERDTree is open, find the newly opened file
+        if is_nerdtree_open() then
+          find_current_file_in_nerdtree()
+        end
         -- Refresh NERDTree state detection after fzf
         if vim.fn.exists("g:NERDTree") == 1 then
           vim.cmd("silent! doautocmd WinEnter")
@@ -233,10 +360,28 @@ map("n", "<leader>f", function()
     end,
   })
 end, opts)
-map("n", "<leader>g", ":Rg<CR>", opts)
-map("n", "<leader>d", function()
-  vim.cmd("lua ToggleNERDTreeWithRefresh()")
+map("n", "<leader>g", function()
+  vim.cmd("Rg")
+  -- Similar handling for ripgrep results
+  vim.api.nvim_create_autocmd("BufEnter", {
+    once = true,
+    callback = function()
+      vim.defer_fn(function()
+        if is_nerdtree_open() then
+          find_current_file_in_nerdtree()
+        end
+      end, 50)
+    end,
+  })
 end, opts)
+map("n", "<leader>d", function()
+  toggle_nerdtree_with_refresh()
+end, opts)
+map("n", "<leader>nf", function()
+  if not find_current_file_in_nerdtree() then
+    print("No file currently open or file not found")
+  end
+end, { noremap = true, silent = false, desc = "Find current file in NERDTree" })
 map("n", "<leader><CR>", "<CR><C-w>h:q<CR>", opts)
 
 -- Terminals --------------------------------------------------------
@@ -275,10 +420,20 @@ map("n", "<leader>gp", ":Git push<CR>")
 map("n", "<leader>gf", ":Git fetch<CR>")
 map("n", "<leader>gpl", ":Git pull<CR>")
 
+-- Discord Presence --------------------------------------------------
+map("n", "<leader>dp", function()
+  if pcall(require, "presence") then
+    vim.cmd("lua require('presence'):update()")
+    print("Discord presence updated")
+  else
+    print("Discord presence not available")
+  end
+end, { desc = "Update Discord presence" })
+
 ---------------------------------------------------------------------
 -- NERDTree Helpers -------------------------------------------------
 ---------------------------------------------------------------------
-local function is_nerdtree_open()
+function _G.is_nerdtree_open()
   -- Simple and reliable method: check all windows for NERDTree
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
@@ -298,54 +453,53 @@ local function is_nerdtree_open()
   return false
 end
 
-local function toggle_nerdtree_with_refresh()
-  -- Force refresh NERDTree state detection
-  vim.cmd("silent! doautocmd WinEnter")
-  
-  if vim.fn.exists(":NERDTreeTabsToggle") == 2 then
-    vim.cmd("NERDTreeTabsToggle")
+function _G.find_current_file_in_nerdtree()
+  local current_file = vim.fn.expand("%:p")
+  if current_file ~= "" and vim.fn.filereadable(current_file) == 1 then
+    vim.cmd("NERDTreeFind")
+    return true
+  end
+  return false
+end
+
+function _G.toggle_nerdtree_with_refresh()
+  -- Behaviour:
+  -- 1. If NERDTree is visible and the cursor is currently inside it, close it.
+  -- 2. If NERDTree is visible but the cursor is in another window, jump to it.
+  -- 3. If NERDTree is not visible, open it with NERDTreeFind and leave focus
+  --    inside the tree.
+
+  local function is_nerdtree_buffer(bufnr)
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    return name:match("NERD_tree_") ~= nil
+  end
+
+  if is_nerdtree_open() then
+    local current_buf = vim.api.nvim_get_current_buf()
+    if is_nerdtree_buffer(current_buf) then
+      -- We are already in the tree -> close it (toggle behaviour)
+      vim.cmd("NERDTreeClose")
+    else
+      -- Tree is open elsewhere → jump to its window
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if is_nerdtree_buffer(buf) then
+          vim.api.nvim_set_current_win(win)
+          return
+        end
+      end
+    end
     return
   end
-  
-  if is_nerdtree_open() then
-    vim.cmd("NERDTreeClose")
-  else
-    -- Get current file path
-    local current_file = vim.fn.expand("%:p")
-    if current_file ~= "" and vim.fn.filereadable(current_file) == 1 then
-      vim.cmd("NERDTreeFind")
-    else
-      vim.cmd("NERDTree")
-    end
-    -- Ensure we return focus to the previous window
-    vim.cmd("wincmd p")
-  end
-end
-_G.ToggleNERDTreeWithRefresh = toggle_nerdtree_with_refresh
 
-local function nerdtree_refresh_root()
+  -- NERDTree not open → open and reveal current file
   local current_file = vim.fn.expand("%:p")
-  
-  if is_nerdtree_open() then
-    vim.cmd("NERDTreeClose")
-    vim.defer_fn(function()
-      if current_file ~= "" then
-        vim.cmd("NERDTree " .. vim.fn.fnameescape(vim.fn.fnamemodify(current_file, ":h")))
-      else
-        vim.cmd("NERDTree")
-      end
-      vim.cmd("wincmd p")
-    end, 100)
+  if current_file ~= "" and vim.fn.filereadable(current_file) == 1 then
+    vim.cmd("NERDTreeFind")
   else
-    if current_file ~= "" then
-      vim.cmd("NERDTree " .. vim.fn.fnameescape(vim.fn.fnamemodify(current_file, ":h")))
-    else
-      vim.cmd("NERDTree")
-    end
-    vim.cmd("wincmd p")
+    vim.cmd("NERDTree")
   end
 end
-vim.keymap.set("n", "<leader>r", nerdtree_refresh_root, opts)
 
 -- NERDTree behaviour ------------------------------------------------
 vim.g.NERDTreeQuitOnOpen = 1
@@ -379,6 +533,22 @@ vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost"}, {
 -- Fallback keybinding for NERDTree toggle (in case main one fails)
 vim.keymap.set("n", "<leader>D", ":NERDTreeToggle<CR>", opts)
 
+-- Refresh NERDTree root to the directory of the current file --------
+local function nerdtree_refresh_root()
+  local current_file = vim.fn.expand("%:p")
+  if is_nerdtree_open() then
+    vim.cmd("NERDTreeClose")
+  end
+  if current_file ~= "" then
+    vim.cmd("NERDTree " .. vim.fn.fnameescape(vim.fn.fnamemodify(current_file, ":h")))
+  else
+    vim.cmd("NERDTree")
+  end
+  -- Return focus to the previously active window
+  vim.cmd("wincmd p")
+end
+vim.keymap.set("n", "<leader>r", nerdtree_refresh_root, opts)
+
 ---------------------------------------------------------------------
 -- CoC Global Variables --------------------------------------------
 ---------------------------------------------------------------------
@@ -389,9 +559,11 @@ vim.g.coc_global_extensions = {
   "coc-css",
   "coc-emmet",
   "coc-prettier",
+  "coc-eslint",
   "coc-pyright",
   "coc-json",
   "coc-yaml",
+  "coc-snippets",
 }
 vim.g.coc_service_startup_timeout = 30000
 vim.g.coc_default_semantic_highlight_groups = 1
@@ -425,49 +597,61 @@ vim.api.nvim_create_autocmd("VimEnter", {
   end,
 })
 
--- Special handling for Handlebars ---------------------------------
-local function setup_handlebars_env()
-  vim.bo.filetype = "handlebars"
-  vim.fn["coc#config"]("diagnostic.enable", false)
-  vim.fn.timer_start(500, function()
-    vim.cmd("CocCommand workspace.showOutput handlebars")
-  end)
-  vim.fn.timer_start(5000, function()
-    vim.fn["coc#config"]("diagnostic.enable", true)
-  end)
-  vim.fn.timer_start(5500, function()
-    vim.cmd("edit")
-  end)
-end
-vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
-  pattern = { "*.hbs", "*.handlebars" },
-  callback = setup_handlebars_env,
-})
-
----------------------------------------------------------------------
--- File-type Specific Options --------------------------------------
----------------------------------------------------------------------
--- Associate filetypes ---------------------------------------------
+-- Simplified Handlebars setup: just set the filetype
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   pattern = { "*.hbs", "*.handlebars" },
   callback = function()
-    vim.bo.filetype = "html.handlebars"
+    vim.bo.filetype = "handlebars"
   end,
 })
+
+-- Associate filetypes ---------------------------------------------
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   pattern = { "*.less" },
   callback = function()
     vim.bo.filetype = "less"
   end,
 })
-
--- Tabs = 2 for web files ------------------------------------------
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "html", "css", "less", "javascript", "handlebars", "vue" },
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = { "*.tsx" },
   callback = function()
+    vim.bo.filetype = "typescriptreact"
+  end,
+})
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = { "*.jsx" },
+  callback = function()
+    vim.bo.filetype = "javascriptreact"
+  end,
+})
+
+-- Enhanced web language indentation settings -----------------------
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { 
+    "html", "css", "less", "scss", "sass", "javascript", "javascriptreact", 
+    "typescript", "typescriptreact", "vue", "json", "jsonc", "handlebars", "yaml"
+  },
+  callback = function()
+    -- Web files typically use 2-space indentation
     vim.bo.tabstop = 2
     vim.bo.softtabstop = 2
     vim.bo.shiftwidth = 2
+    vim.bo.expandtab = true
+    vim.bo.autoindent = true
+    vim.bo.smartindent = true
+    
+    -- Enhanced JavaScript/TypeScript specific settings
+    if vim.bo.filetype:match("javascript") or vim.bo.filetype:match("typescript") then
+      vim.bo.cindent = true
+      -- Set JavaScript-specific indentation rules
+      vim.bo.cinoptions = "j1,(0,ws,Ws,g0,t0"
+      -- j1: Indent Java/JavaScript anonymous functions
+      -- (0: Align with opening parenthesis
+      -- ws: Indent after opening parenthesis if it's the last character
+      -- Ws: Indent after opening parenthesis if it's not the last character
+      -- g0: No extra indent for C++ scope declarations
+      -- t0: No extra indent for function return type
+    end
   end,
 })
 
@@ -480,6 +664,8 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.bo.shiftwidth = 4
     vim.bo.expandtab = true
     vim.bo.autoindent = true
+    vim.bo.smartindent = true
+    vim.bo.cindent = false  -- Python doesn't need C-style indentation
     vim.bo.fileformat = "unix"
     -- PEP 8 compliance
     vim.wo.colorcolumn = "79"
@@ -489,6 +675,86 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "<leader>pi", ":Isort<CR>", { buffer = true, desc = "Sort imports" })
   end,
 })
+
+-- Enhanced indentation for specific languages --------------------
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "lua", "vim" },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.softtabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.expandtab = true
+    vim.bo.autoindent = true
+    vim.bo.smartindent = true
+  end,
+})
+
+-- Special handling for markdown and text files -------------------
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "text", "gitcommit" },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.softtabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.expandtab = true
+    vim.wo.wrap = true
+    vim.wo.linebreak = true
+  end,
+})
+
+-- Global indentation helper functions -----------------------------
+-- Function to fix indentation for the entire buffer
+local function fix_indentation()
+  local view = vim.fn.winsaveview()
+  vim.cmd("normal! gg=G")
+  vim.fn.winrestview(view)
+  print("Indentation fixed for entire buffer")
+end
+
+-- Function to set indentation to 2 spaces
+local function set_indent_2()
+  vim.bo.tabstop = 2
+  vim.bo.softtabstop = 2
+  vim.bo.shiftwidth = 2
+  vim.bo.expandtab = true
+  print("Indentation set to 2 spaces")
+end
+
+-- Function to set indentation to 4 spaces
+local function set_indent_4()
+  vim.bo.tabstop = 4
+  vim.bo.softtabstop = 4
+  vim.bo.shiftwidth = 4
+  vim.bo.expandtab = true
+  print("Indentation set to 4 spaces")
+end
+
+-- Add keymaps for indentation helpers
+vim.keymap.set("n", "<leader>if", fix_indentation, { desc = "Fix indentation for entire buffer" })
+vim.keymap.set("n", "<leader>i2", set_indent_2, { desc = "Set indentation to 2 spaces" })
+vim.keymap.set("n", "<leader>i4", set_indent_4, { desc = "Set indentation to 4 spaces" })
+
+-- Enhanced Enter key behavior for better indentation
+vim.keymap.set("i", "<CR>", function()
+  -- Get current line and its indentation
+  local line = vim.api.nvim_get_current_line()
+  local indent = line:match("^%s*")
+  
+  -- Check if we're in a JavaScript-like language
+  local ft = vim.bo.filetype
+  if ft:match("javascript") or ft:match("typescript") or ft:match("vue") then
+    -- If line ends with opening brace, add extra indent
+    if line:match("{%s*$") then
+      return "<CR>" .. indent .. string.rep(" ", vim.bo.shiftwidth)
+    -- If line ends with opening parenthesis or bracket, add extra indent
+    elseif line:match("[(%[]%s*$") then
+      return "<CR>" .. indent .. string.rep(" ", vim.bo.shiftwidth)
+    end
+  end
+  
+  -- Default behavior with smart indentation
+  return "<CR>"
+end, { expr = true, desc = "Smart Enter with indentation" })
 
 -- User Commands ----------------------------------------------------
 ---------------------------------------------------------------------
