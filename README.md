@@ -21,10 +21,10 @@ This guide will help you set up Neovim with the included Lua configuration on bo
    # For Ubuntu/Debian
    sudo apt update
    sudo apt install neovim
-   
+
    # For Arch Linux
    sudo pacman -S neovim
-   
+
    # For Fedora
    sudo dnf install neovim
    ```
@@ -33,31 +33,31 @@ This guide will help you set up Neovim with the included Lua configuration on bo
    ```bash
    # For Ubuntu/Debian
    sudo apt install ripgrep
-   
+
    # For Arch Linux
    sudo pacman -S ripgrep
-   
+
    # For Fedora
    sudo dnf install ripgrep
    ```
 
 3. **Create Configuration Directory:**
    ```bash
-   mkdir -p ~/.config/nvim
+   mkdir -p ~/.config/nvim/lua/config
    ```
 
 4. **Clone or Copy Configuration Files:**
-   Copy the `init.lua` and `coc-settings.json` files to `~/.config/nvim/`
+   Copy all files preserving the directory structure (see [Configuration Structure](#configuration-structure) below).
 
 5. **Install Language Servers:**
    ```bash
-   # For HTML language server
+   # HTML language server
    sudo npm install -g vscode-html-language-server
-   
-   # For TypeScript language server
+
+   # TypeScript language server
    sudo npm install -g typescript typescript-language-server
-   
-   # For CSS language server
+
+   # CSS language server
    sudo npm install -g vscode-css-language-server
    ```
 
@@ -67,7 +67,7 @@ This guide will help you set up Neovim with the included Lua configuration on bo
    ```
    Packer will automatically bootstrap itself on first run. After opening Neovim, run:
    ```
-   :PackerInstall
+   :PackerSync
    ```
 
 7. **Install CoC Extensions:**
@@ -95,18 +95,18 @@ This guide will help you set up Neovim with the included Lua configuration on bo
    ```powershell
    # Using Chocolatey
    choco install ripgrep
-   
+
    # Using Scoop
    scoop install ripgrep
    ```
 
 3. **Create Configuration Directory:**
    ```powershell
-   mkdir -p ~/AppData/Local/nvim
+   mkdir -p ~/AppData/Local/nvim/lua/config
    ```
 
 4. **Clone or Copy Configuration Files:**
-   Copy the `init.lua` and `coc-settings.json` files to `~/AppData/Local/nvim/`
+   Copy all files preserving the directory structure (see [Configuration Structure](#configuration-structure) below).
 
 5. **Install Language Servers:**
    ```powershell
@@ -119,187 +119,259 @@ This guide will help you set up Neovim with the included Lua configuration on bo
    ```
    Packer will automatically bootstrap itself on first run. After opening Neovim, run:
    ```
-   :PackerInstall
+   :PackerSync
    ```
 
 7. **Install CoC Extensions:**
-   The configuration automatically installs CoC extensions, but you can manually install them with:
    ```
    :CocInstall coc-tsserver coc-html coc-css coc-emmet coc-prettier
    ```
 
-## Configuration Files
+---
 
-This setup includes two main configuration files:
+## Configuration Structure
 
-1. **init.lua**: The main Neovim configuration file written in Lua with plugins, keymaps, and settings
-2. **coc-settings.json**: Configuration for the CoC (Conquer of Completion) plugin
+The configuration is split into focused modules under `lua/config/`. Each file is responsible for one concern.
+
+```
+~/.config/nvim/
+├── init.lua                  ← Entry point: loads all modules in order
+├── coc-settings.json         ← CoC language server settings
+└── lua/config/
+    ├── options.lua           ← Editor options (indentation, line numbers, clipboard…)
+    ├── plugins.lua           ← Packer bootstrap + all plugin declarations
+    ├── plugin_config.lua     ← Setup calls for: transparent, treesitter, gitsigns,
+    │                           presence, autoclose, autotag, bufferline
+    ├── appearance.lua        ← Colorscheme (gruvbox-material) + transparency highlights
+    ├── nerdtree.lua          ← NERDTree helper functions, settings, and keymaps
+    ├── coc.lua               ← CoC settings, setup, and filetype associations
+    ├── autocmds.lua          ← FileType indentation rules, indent helpers, user commands
+    └── keymaps.lua           ← All general keymaps
+```
+
+To add a new plugin: declare it in `plugins.lua`, configure it in `plugin_config.lua`, then run `:PackerSync`.
+
+---
 
 ## Included Plugins
 
 ### Core Functionality
-- **Packer.nvim**: Modern plugin manager with lazy loading
+- **Packer.nvim**: Plugin manager with automatic bootstrapping
 - **CoC.nvim**: LSP-based completion and language server integration
 
 ### Language Support
 - **vim-javascript**: JavaScript syntax highlighting
-- **typescript-vim**: TypeScript syntax highlighting  
-- **vim-vue**: Vue.js component support
-- **vim-vue-plugin**: Enhanced Vue.js features
+- **JavaScript-Indent**: Better JavaScript indentation
+- **typescript-vim**: TypeScript syntax highlighting
+- **vim-vue** / **vim-vue-plugin**: Vue.js component support
 - **vim-mustache-handlebars**: Handlebars template support
 - **html5.vim**: HTML5 syntax and omnicomplete
 - **vim-css3-syntax**: CSS3 syntax highlighting
 - **vim-less**: Less CSS preprocessor support
-- **vim-polyglot**: Language pack for multiple languages
-- **vim-terraform**: Terraform configuration language support
+- **ap/vim-css-color**: Inline colour previews in CSS files
+- **vim-polyglot**: Language pack for many languages
+- **vim-terraform** / **vim-terraform-completion**: Terraform support
 
-### Development Tools
-- **nvim-treesitter**: Modern syntax highlighting and parsing
-- **nvim-ts-autotag**: Auto-close HTML/XML tags
+### Python Development
+- **vim-python/python-syntax**: Enhanced Python syntax
+- **vim-python-pep8-indent**: PEP 8 compliant indentation
+- **vim-autopep8**: Auto-format with autopep8
+- **black**: Opinionated Python formatter
+- **vim-isort**: Sort Python imports
+- **indentpython.vim**: Python-specific indentation
+
+### Developer Tools
+- **nvim-treesitter**: Modern syntax highlighting and code parsing
+- **nvim-ts-autotag**: Auto-close and auto-rename HTML/XML tags
 - **emmet-vim**: HTML/CSS abbreviation expansion
 - **vim-prettier**: Code formatting with Prettier
 - **syntastic**: Syntax checking
 - **autoclose.nvim**: Auto-close brackets and quotes
+- **indent-blankline.nvim**: Visual indentation guides
 
 ### Git Integration
-- **vim-fugitive**: Git wrapper for Vim
-- **gitsigns.nvim**: Git signs in the gutter with modern features
+- **vim-fugitive**: Full Git wrapper
+- **gitsigns.nvim**: Git signs in the gutter with hunk actions
 
 ### UI & Navigation
-- **fzf** & **fzf.vim**: Fuzzy file finder
+- **fzf** & **fzf.vim**: Fuzzy file and text finder
 - **vim-airline**: Status line
-- **nerdtree**: File explorer
-- **vim-devicons**: File type icons
-- **vim-nerdtree-tabs**: NERDTree tabs integration
+- **NERDTree**: File explorer sidebar
+- **vim-devicons** / **nvim-web-devicons**: File type icons
+- **vim-nerdtree-tabs**: NERDTree tab integration
+- **bufferline.nvim**: Buffer tabs displayed at the top of the screen
 
 ### Editing Helpers
-- **vim-surround**: Easily change surroundings
+- **vim-surround**: Change/add/delete surrounding characters
 - **vim-closetag**: Auto-close HTML tags
+- **autoclose.nvim**: Auto-close brackets and quotes
 
 ### Appearance
-- **nightfox.nvim**: Modern colorscheme
+- **gruvbox-material**: Default colorscheme (hard dark background)
+- **nightfox.nvim**: Modern colorscheme alternative
 - **awesome-vim-colorschemes**: Collection of colorschemes
-- **transparent.nvim**: Transparency support
+- **transparent.nvim**: Terminal transparency support
 - **neon**: Additional colorscheme option
 
-## Key Features
+### Other
+- **presence.nvim**: Discord Rich Presence integration
 
-- **Modern Lua Configuration**: Written in Lua for better performance and maintainability
-- **Plugin Manager**: Uses Packer.nvim with automatic bootstrapping
-- **Language Support**: JavaScript, TypeScript, HTML, CSS, Less, Vue.js, Handlebars, Terraform
-- **Syntax Highlighting**: Treesitter-based syntax highlighting with auto-tag support
-- **LSP Integration**: CoC (Conquer of Completion) for intelligent code completion
-- **File Navigation**: NERDTree with custom toggle functions and FZF for fuzzy finding
-- **Git Integration**: Gitsigns for inline git changes and Fugitive for Git commands
-- **Theme**: Nightfox colorscheme with transparency support
-- **Auto-formatting**: Prettier integration and automatic bracket/tag closing
-- **Terminal Integration**: Built-in terminal support with custom mappings
+---
 
 ## Key Mappings
 
-The leader key is set to `,` (comma). Some important key mappings include:
+The leader key is `,` (comma).
 
-- `,w`: Save file
-- `,d`: Toggle NERDTree
-- `,r`: Refresh NERDTree root
-- `,f`: Fuzzy find files (FZF)
-- `,g`: Ripgrep search
-- `,s`: CoC search
-- `,tv`: Open terminal in vertical split
-- `,th`: Open terminal in horizontal split
-- `,cr`: Restart CoC server
-- `gd`: Go to definition (CoC)
-- `gr`: Go to references (CoC)
-- `Ctrl+j/k/h/l`: Navigate between splits
-- `ii`: Exit insert mode (alternative to Escape)
-- `Space`: Toggle fold (normal mode) / Create fold (visual mode)
-- `Ctrl+Z/Y`: Undo/Redo (works in insert mode too)
+### General
 
-### Git Shortcuts
-- `,gs`: Git status
-- `,gc`: Git commit
-- `,gd`: Git diff
-- `,gb`: Git blame
-- `,gl`: Git log
-- `,gp`: Git push
-- `,gf`: Git fetch
-- `,gpl`: Git pull
+| Key | Action |
+|---|---|
+| `,w` | Save file |
+| `ii` | Exit insert mode (alternative to Escape) |
+| `Space` | Toggle fold (normal) / Create fold (visual) |
+| `Ctrl+Z` / `Ctrl+Y` | Undo / Redo (works in insert mode too) |
 
-### Git Hunk Navigation (Gitsigns)
-- `]h`: Next hunk
-- `[h`: Previous hunk
-- `,hp`: Preview hunk
-- `,hs`: Stage hunk
-- `,hu`: Undo stage hunk
-- `,hr`: Reset hunk
-- `,hb`: Toggle current line blame
+### Buffer Tabs (bufferline)
+
+| Key | Action |
+|---|---|
+| `Tab` | Next tab |
+| `Shift+Tab` | Previous tab |
+| `,1` – `,9` | Jump to tab by position |
+| `,bp` | Pick tab interactively (shows a letter on each) |
+| `,bc` | Pick-to-close a tab |
+| `:bd` | Close current buffer |
+
+### File Navigation
+
+| Key | Action |
+|---|---|
+| `,d` | Toggle NERDTree (smart: open/focus/close) |
+| `,D` | Toggle NERDTree (simple fallback) |
+| `,nf` | Reveal current file in NERDTree |
+| `,r` | Re-root NERDTree to current file's directory |
+| `,f` | Fuzzy find files (FZF) |
+| `,g` | Ripgrep text search |
+| `,s` | CoC search |
+
+### NERDTree File Opening
+
+| NERDTree key | Result |
+|---|---|
+| `Enter` / `o` | Open file → active bufferline tab |
+| `s` | Open in vertical split |
+| `i` | Open in horizontal split |
+
+### Window Navigation
+
+| Key | Action |
+|---|---|
+| `Ctrl+h/j/k/l` | Move between splits |
+
+### Terminal
+
+| Key | Action |
+|---|---|
+| `,tv` | Open terminal in vertical split |
+| `,th` | Open terminal in horizontal split |
+| `Esc` | Exit terminal mode |
+
+### Indentation Helpers
+
+| Key | Action |
+|---|---|
+| `,if` | Fix indentation for entire buffer (`gg=G`) |
+| `,i2` | Set indentation to 2 spaces |
+| `,i4` | Set indentation to 4 spaces |
+
+### CoC (Language Server)
+
+| Key | Action |
+|---|---|
+| `,cr` | Restart CoC server |
+
+### Python
+
+| Key | Action |
+|---|---|
+| `,pb` | Run current file with Python |
+| `,pf` | Format with Black |
+| `,pi` | Sort imports with isort |
+| `,pt` | Run pytest in a terminal |
+| `,pr` | Open Python REPL |
+
+### Git / Gitsigns
+
+| Key | Action |
+|---|---|
+| `]h` / `[h` | Next / previous hunk |
+| `,hp` | Preview hunk |
+| `,hs` | Stage hunk |
+| `,hu` | Undo stage hunk |
+| `,hr` | Reset hunk |
+| `,hb` | Toggle current line blame |
+
+### Vim-Fugitive
+
+| Key | Action |
+|---|---|
+| `,gs` | Git status |
+| `,gc` | Git commit |
+| `,gd` | Git diff |
+| `,gb` | Git blame |
+| `,gl` | Git log |
+| `,gp` | Git push |
+| `,gf` | Git fetch |
+| `,gpl` | Git pull |
+
+### Discord Presence
+
+| Key | Action |
+|---|---|
+| `,dp` | Update Discord presence manually |
+
+---
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Missing Icons**:
-   - Make sure you have installed and configured a [Nerd Font](https://www.nerdfonts.com/)
-   - Set your terminal to use the installed Nerd Font
+1. **Missing Icons**
+   - Install and configure a [Nerd Font](https://www.nerdfonts.com/) and set your terminal to use it.
 
-2. **CoC Language Server Issues**:
-   - If language servers aren't working, try restarting with `,cr`
-   - Check if servers are properly installed using `:CocInfo`
-   - For issues with specific language servers, try reinstalling them
-   - Check `:checkhealth` for diagnostic information
+2. **BufferLine commands not found (`E492`)**
+   - Run `:PackerSync` to install bufferline.nvim, then restart Neovim.
 
-3. **Packer Plugin Issues**:
+3. **CoC Language Server Issues**
+   - Restart with `,cr` or check `:CocInfo`
+   - Run `:checkhealth` for diagnostics
+
+4. **Packer Plugin Issues**
    - Run `:PackerSync` to update and clean plugins
-   - If plugins fail to install, try `:PackerClean` followed by `:PackerInstall`
-   - For compilation issues, delete the `plugin/packer_compiled.lua` file and restart Neovim
+   - If plugins fail: `:PackerClean` then `:PackerInstall`
+   - Delete `plugin/packer_compiled.lua` and restart if compilation errors occur
 
-4. **Treesitter Issues**:
-   - If syntax highlighting is broken, try `:TSUpdate`
-   - For missing parsers, install them with `:TSInstall <language>`
+5. **Treesitter Issues**
+   - Broken highlighting: `:TSUpdate`
+   - Missing parser: `:TSInstall <language>`
 
-5. **Transparency Issues**:
-   - If transparency doesn't work, check if your terminal supports it
-   - You can disable transparency by commenting out the transparent plugin configuration
+6. **Transparency Issues**
+   - Check if your terminal supports background transparency
+   - Disable by commenting out the transparent plugin config in `lua/config/plugin_config.lua`
 
-6. **Windows-specific Issues**:
-   - Path issues: Make sure all binaries are in your PATH
-   - Permission issues: Run terminal as administrator if needed
-   - PowerShell execution policy: You may need to run `Set-ExecutionPolicy RemoteSigned`
+7. **Windows-specific Issues**
+   - Ensure all binaries are in PATH
+   - Run terminal as administrator if needed
+   - PowerShell: `Set-ExecutionPolicy RemoteSigned`
 
-## Customization
-
-To customize this configuration:
-
-1. **Adding Plugins**: 
-   - Add new plugins in the Packer configuration section of `init.lua`
-   - Run `:PackerSync` to install them
-
-2. **Changing Settings**:
-   - Modify settings in `init.lua` for Neovim and plugins
-   - Modify settings in `coc-settings.json` for CoC-related configurations
-
-3. **Custom Keymaps**:
-   - Add or modify keymaps in the keymaps section of `init.lua`
-
-4. **Theme Customization**:
-   - Change the colorscheme by modifying the `vim.cmd("colorscheme nightfox")` line
-   - Adjust transparency settings in the transparent plugin configuration
-
-5. **Language Support**:
-   - Add new language servers in `coc-settings.json`
-   - Install additional Treesitter parsers with `:TSInstall <language>`
+---
 
 ## Updating
 
-1. **Update Neovim**:
-   - Linux: Use your package manager
-   - Windows: Download new release or use `choco upgrade neovim` or `scoop update neovim`
-
-2. **Update Plugins**:
-   - Inside Neovim, run `:PackerUpdate` or `:PackerSync`
-
-3. **Update CoC Extensions**:
-   - Inside Neovim, run `:CocUpdate`
-
-4. **Update Treesitter Parsers**:
-   - Inside Neovim, run `:TSUpdate`
+| What | Command |
+|---|---|
+| Plugins | `:PackerSync` |
+| CoC extensions | `:CocUpdate` |
+| Treesitter parsers | `:TSUpdate` |
+| Neovim (Linux) | Use your package manager |
+| Neovim (Windows) | `choco upgrade neovim` or `scoop update neovim` |

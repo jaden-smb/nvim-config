@@ -94,6 +94,11 @@ _G.packer_plugins = {
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/black",
     url = "https://github.com/psf/black"
   },
+  ["bufferline.nvim"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
+    url = "https://github.com/akinsho/bufferline.nvim"
+  },
   ["coc-typescript-vue-plugin"] = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/coc-typescript-vue-plugin",
@@ -140,7 +145,7 @@ _G.packer_plugins = {
     url = "https://github.com/othree/html5.vim"
   },
   ["indent-blankline.nvim"] = {
-    config = { "\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\tchar\bâ”‚\rtab_char\bâ”‚\nsetup\bibl\frequire\0" },
+    config = { "\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\rtab_char\bâ”‚\tchar\bâ”‚\nsetup\bibl\frequire\0" },
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim",
     url = "https://github.com/lukas-reineke/indent-blankline.nvim"
@@ -174,6 +179,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/jaden/.local/share/nvim/site/pack/packer/start/nvim-ts-autotag",
     url = "https://github.com/windwp/nvim-ts-autotag"
+  },
+  ["nvim-web-devicons"] = {
+    loaded = true,
+    path = "/home/jaden/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
+    url = "https://github.com/nvim-tree/nvim-web-devicons"
   },
   ["packer.nvim"] = {
     loaded = false,
@@ -311,7 +321,7 @@ _G.packer_plugins = {
 time([[Defining packer_plugins]], false)
 -- Config for: indent-blankline.nvim
 time([[Config for indent-blankline.nvim]], true)
-try_loadstring("\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\tchar\bâ”‚\rtab_char\bâ”‚\nsetup\bibl\frequire\0", "config", "indent-blankline.nvim")
+try_loadstring("\27LJ\2\n¥\2\0\0\6\0\f\0\0156\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\4\0005\4\3\0=\4\5\0035\4\6\0=\4\a\0035\4\t\0005\5\b\0=\5\n\4=\4\v\3B\1\2\1K\0\1\0\fexclude\14filetypes\1\0\0\1\v\0\0\thelp\nalpha\14dashboard\rneo-tree\fTrouble\tlazy\nmason\vnotify\15toggleterm\rlazyterm\nscope\1\0\5\fenabled\2\rpriority\3ô\3\23injected_languages\1\rshow_end\1\15show_start\2\vindent\1\0\0\1\0\2\rtab_char\bâ”‚\tchar\bâ”‚\nsetup\bibl\frequire\0", "config", "indent-blankline.nvim")
 time([[Config for indent-blankline.nvim]], false)
 
 _G._packer.inside_compile = false
