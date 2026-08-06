@@ -51,14 +51,13 @@ This guide will help you set up Neovim with the included Lua configuration on bo
 
 5. **Install Language Servers:**
    ```bash
-   # HTML language server
-   sudo npm install -g vscode-html-language-server
+   # HTML + CSS + JSON + ESLint language servers
+   # (vscode-html-language-server and vscode-css-language-server
+   # are NOT standalone packages — they ship together in this bundle)
+   sudo npm install -g vscode-langservers-extracted
 
    # TypeScript language server
    sudo npm install -g typescript typescript-language-server
-
-   # CSS language server
-   sudo npm install -g vscode-css-language-server
    ```
 
 6. **Open Neovim and Install Plugins:**
@@ -110,7 +109,8 @@ This guide will help you set up Neovim with the included Lua configuration on bo
 
 5. **Install Language Servers:**
    ```powershell
-   npm install -g vscode-html-language-server typescript typescript-language-server vscode-css-language-server
+   # vscode-langservers-extracted bundles the HTML, CSS, JSON, and ESLint servers
+   npm install -g vscode-langservers-extracted typescript typescript-language-server
    ```
 
 6. **Open Neovim and Install Plugins:**
@@ -339,27 +339,30 @@ The leader key is `,` (comma).
 1. **Missing Icons**
    - Install and configure a [Nerd Font](https://www.nerdfonts.com/) and set your terminal to use it.
 
-2. **BufferLine commands not found (`E492`)**
+2. **`npm ERR! 404` on `vscode-html-language-server` / `vscode-css-language-server`**
+   - These are not standalone npm packages. Install `vscode-langservers-extracted` instead — it bundles the HTML, CSS, JSON, and ESLint servers in one package.
+
+3. **BufferLine commands not found (`E492`)**
    - Run `:PackerSync` to install bufferline.nvim, then restart Neovim.
 
-3. **CoC Language Server Issues**
+4. **CoC Language Server Issues**
    - Restart with `,cr` or check `:CocInfo`
    - Run `:checkhealth` for diagnostics
 
-4. **Packer Plugin Issues**
+5. **Packer Plugin Issues**
    - Run `:PackerSync` to update and clean plugins
    - If plugins fail: `:PackerClean` then `:PackerInstall`
    - Delete `plugin/packer_compiled.lua` and restart if compilation errors occur
 
-5. **Treesitter Issues**
+6. **Treesitter Issues**
    - Broken highlighting: `:TSUpdate`
    - Missing parser: `:TSInstall <language>`
 
-6. **Transparency Issues**
+7. **Transparency Issues**
    - Check if your terminal supports background transparency
    - Disable by commenting out the transparent plugin config in `lua/config/plugin_config.lua`
 
-7. **Windows-specific Issues**
+8. **Windows-specific Issues**
    - Ensure all binaries are in PATH
    - Run terminal as administrator if needed
    - PowerShell: `Set-ExecutionPolicy RemoteSigned`
